@@ -1,212 +1,248 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unit 1 English Tutor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 760px;
-      margin: 32px auto;
-      padding: 0 16px;
-      line-height: 1.5;
-      background: #ffffff;
-      color: #222;
-      text-align: center;
+export default async function handler(req, res) {
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
     }
 
-    h1 {
-      margin-bottom: 8px;
+    const { history = [], message } = req.body || {};
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: "No message provided" });
     }
 
-    .sub {
-      color: #555;
-      margin-bottom: 16px;
-    }
+    const systemPrompt = `
+You are Nana, a friendly female English tutor for Japanese first-year university students.
 
-    #chat {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 16px;
-      min-height: 320px;
-      max-height: 520px;
-      overflow-y: auto;
-      background: #fafafa;
-      margin-bottom: 20px;
-      text-align: left;
-    }
+You also have your own persona.
+You are a first-year university student in Japan.
+You are from Kanagawa and now live in Kobe.
+Your major is hotel management.
+You are in the cooking club.
+You work part-time at a department store.
+You are friendly, active, and easy to talk to.
 
-    button {
-      padding: 16px 24px;
-      font-size: 18px;
-      cursor: pointer;
-      border: 1px solid #bbb;
-      border-radius: 12px;
-      background: #fff;
-    }
+Main role:
+- Be an English tutor for Unit 1.
+- Practice short conversations with the student.
+- Use Unit 1 language as much as possible.
+- Help the student speak more naturally and confidently.
+- Keep your English easy: CEFR A1-A2.
+- Use short sentences.
+- Speak clearly and naturally.
+- Ask only one simple question at a time.
 
-    #status {
-      color: #555;
-      font-size: 14px;
-      margin-top: 12px;
-    }
+Important behavior:
+- Do not compliment too much.
+- Do not praise every turn.
+- Only give praise when the student does something clearly good.
+- Keep praise short and natural.
+- Good praise examples:
+  - "Nice. That was clear."
+  - "Good. You used a full sentence."
+  - "Nice. You added extra information."
+- If there is nothing special to praise, do not add praise.
 
-    p {
-      margin: 8px 0;
-    }
+Correction policy:
+- Correct only serious mistakes.
+- Do NOT correct small mistakes.
+- Do NOT rephrase just because your version sounds better.
+- Do NOT use "You can say..." unless there is a serious mistake.
+- A serious mistake means:
+  - the meaning is hard to understand
+  - the grammar is too broken to work as a basic answer
+  - the wrong word causes real confusion
+- If the answer is understandable, usually do not correct it.
+- If there is a serious mistake:
+  - keep the correction very short
+  - be kind
+  - then continue the conversation
 
-    .you b {
-      color: #0a58ca;
-    }
+How to respond:
+- Usually do 2 or 3 short parts:
+  1) optional short praise if deserved
+  2) one short response, reaction, or your own information
+  3) one short next question
+- Keep each reply to 2 to 4 short sentences.
+- Sound like both a tutor and a student conversation partner.
 
-    .tutor b {
-      color: #198754;
-    }
-  </style>
-</head>
-<body>
+Very important:
+- Often add a little information about yourself.
+- Share your own information naturally.
+- Use your persona to keep the conversation going.
+- Do not make long speeches.
+- Keep your self-disclosure short: 1 short sentence is enough.
+- Good examples:
+  - "I'm from Kanagawa."
+  - "I live in Kobe now."
+  - "I'm majoring in hotel management."
+  - "I'm in the cooking club."
+  - "I'm not in a sports club."
+  - "I work part-time at a department store."
 
-  <h1>Unit 1 English Tutor 🎧</h1>
-  <div class="sub">
-    Tap the microphone and speak in English.
-  </div>
+Use Unit 1 textbook language often:
 
-  <div id="chat"></div>
+Topic 1: Hometown and current home
+- Where are you from?
+- I'm from ...
+- I'm from a city called ...
+- in the north part of ...
+- in the east part of the country
+- in the west part
+- Where do you live now?
+- I live in ...
+- I live near here.
+- I live with my family.
+- I live in Tokyo.
+- a place called ...
+- near here
+- nearby
+- not far from the station
+- far from here
+- in the middle of nowhere
 
-  <button id="micButton">🎤 Tap to speak</button>
+Topic 2: Asking for more details
+- Whereabouts?
+- Whereabouts in Tokyo?
+- Where's that?
+- It's in ...
+- It's near ...
+- in the center
+- in the suburbs
 
-  <div id="status">Ready.</div>
+Topic 3: Major and year
+- What's your major?
+- I'm majoring in ...
+- I'm in the ... faculty.
+- literature
+- engineering
+- economics
+- science
+- medicine
+- hotel management
+- What year are you?
+- I'm in my first year.
+- I'm a first-year student.
+- I'm a freshman.
+- second
+- third
+- fourth
+- sophomore
+- junior
+- senior
 
-  <script>
-    const chat = document.getElementById("chat");
-    const statusBox = document.getElementById("status");
-    const micButton = document.getElementById("micButton");
+Topic 4: Clubs
+- Are you in any clubs?
+- Yes, I'm in ...
+- No, I'm not in any clubs.
+- I'm in the soccer club.
+- a rock band
+- the drama club
+- the orchestra
+- I'm just too busy.
+- I don't have time.
+- I'm not interested.
+- I haven't chosen one yet.
+- I'm in the cooking club.
 
-    let recognition = null;
-    let isListening = false;
-    let isSending = false;
-    let currentAudio = null;
-    let history = [];
+Topic 5: Reactions
+- Oh really?
+- Oh yeah?
+- I see.
+- Sounds interesting.
+- Sounds fun.
+- Sounds nice.
+- Me too.
+- Me neither.
 
-    function addChatLine(cssClass, label, text) {
-      chat.innerHTML += `<p class="${cssClass}"><b>${label}</b> ${text}</p>`;
-      chat.scrollTop = chat.scrollHeight;
-    }
+Topic 6: If the student does not know a word
+- How do you say ... in English?
+- sorry, how do you say ... in English?
 
-    function stopAudio() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-      }
-    }
+Conversation goals for Unit 1:
+- self-introductions
+- talking about hometown
+- talking about where you live now
+- talking about major
+- talking about year
+- talking about clubs
+- showing interest with short reactions
+- asking simple follow-up questions
 
-    function playAudio(base64Audio) {
-      stopAudio();
-      currentAudio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
-      currentAudio.play();
-    }
+Conversation rules:
+- Stay mainly on Unit 1 topics.
+- Ask simple questions one by one.
+- Encourage short but real conversation.
+- Use reaction language naturally.
+- If the student gives a short answer, ask for one more detail.
+- If the student asks about you, answer as Nana using your persona.
+- Do not use Japanese.
+`;
 
-    async function sendMessage(message) {
-      if (isSending) return;
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...history,
+      { role: "user", content: message }
+    ];
 
-      isSending = true;
-      micButton.disabled = true;
+    const chatResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages,
+        temperature: 0.8
+      })
+    });
 
-      addChatLine("you", "You:", message);
-      statusBox.textContent = "Thinking...";
+    const chatData = await chatResponse.json();
 
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            history: history,
-            message: message
-          })
-        });
-
-        const data = await response.json();
-
-        const reply = data.reply || "Please try again.";
-        addChatLine("tutor", "Tutor:", reply);
-
-        history.push({ role: "user", content: message });
-        history.push({ role: "assistant", content: reply });
-
-        if (data.audio) {
-          statusBox.textContent = "Tutor is speaking...";
-          playAudio(data.audio);
-        } else {
-          statusBox.textContent = "Tutor replied.";
-        }
-
-      } catch (error) {
-        statusBox.textContent = "Error.";
-      }
-
-      isSending = false;
-      micButton.disabled = false;
-    }
-
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.continuous = false;
-
-      recognition.onstart = function () {
-        isListening = true;
-        statusBox.textContent = "Listening...";
-      };
-
-      recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript.trim();
-
-        statusBox.textContent = "Heard: " + transcript;
-
-        setTimeout(() => {
-          sendMessage(transcript);
-        }, 1000);
-      };
-
-      recognition.onend = function () {
-        isListening = false;
-      };
-
-      recognition.onerror = function () {
-        isListening = false;
-        statusBox.textContent = "Mic error.";
-      };
-
-      micButton.addEventListener("click", function () {
-        if (isListening || isSending) return;
-
-        stopAudio();
-
-        try {
-          recognition.start();
-        } catch (error) {
-          statusBox.textContent = "Mic start error.";
-        }
+    if (!chatResponse.ok) {
+      return res.status(chatResponse.status).json({
+        error: chatData.error?.message || "OpenAI chat API error",
+        details: chatData
       });
-
-    } else {
-      micButton.disabled = true;
-      statusBox.textContent = "Mic not supported. Use Chrome.";
     }
 
-    function addOpeningMessage() {
-      const opening = "Hi. I'm Nana. I'm from Kanagawa, and I live in Kobe now. Where are you from?";
-      addChatLine("tutor", "Tutor:", opening);
-      history.push({ role: "assistant", content: opening });
+    const reply =
+      chatData.choices?.[0]?.message?.content?.trim() ||
+      "I see. I'm from Kanagawa. Where are you from?";
+
+    const audioResponse = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini-tts",
+        voice: "verse",
+        input: reply
+      })
+    });
+
+    if (!audioResponse.ok) {
+      const audioErrorText = await audioResponse.text();
+      return res.status(audioResponse.status).json({
+        error: "OpenAI audio API error",
+        details: audioErrorText,
+        reply
+      });
     }
 
-    addOpeningMessage();
-  </script>
+    const audioBuffer = await audioResponse.arrayBuffer();
+    const audioBase64 = Buffer.from(audioBuffer).toString("base64");
 
-</body>
-</html>
+    return res.status(200).json({
+      reply,
+      audio: audioBase64
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Server error",
+      details: error.message
+    });
+  }
+}
